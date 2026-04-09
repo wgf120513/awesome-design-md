@@ -1,0 +1,25 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # 每6小时同步一次
+  workflow_dispatch:       # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Sync upstream
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          git remote add upstream https://github.com/VoltAgent/awesome-design-md.git
+          git fetch upstream
+          git checkout main
+          git merge upstream/main || true
+          git push origin main
